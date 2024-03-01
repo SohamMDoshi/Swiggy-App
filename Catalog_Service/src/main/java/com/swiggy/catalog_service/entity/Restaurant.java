@@ -1,7 +1,6 @@
 package com.swiggy.catalog_service.entity;
 
-import com.swiggy.catalog_service.requestModels.CreateRestaurantRequest;
-import com.swiggy.catalog_service.requestModels.UpdateRestaurantRequest;
+import com.swiggy.catalog_service.requestModels.RestaurantRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,9 +18,9 @@ public class Restaurant {
     @OneToOne
     private Location location;
 
-    public Restaurant(CreateRestaurantRequest request) {
+    public Restaurant(RestaurantRequest request) {
     }
 
-    public void update(UpdateRestaurantRequest request) {
+    public void update(RestaurantRequest request) {
     }
 }

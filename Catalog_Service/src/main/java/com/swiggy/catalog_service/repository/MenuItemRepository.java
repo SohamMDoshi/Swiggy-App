@@ -2,11 +2,16 @@ package com.swiggy.catalog_service.repository;
 
 import com.swiggy.catalog_service.entity.MenuItem;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface MenuItemRepository extends JpaRepository<MenuItem,Long> {
-    List<MenuItem> findByRestaurntId(Long restaurantId);
+    @Query(value = "SELECT * FROM public.menu_item WHERE restaurant_id =?1", nativeQuery = true)
+    List<MenuItem> findByRestaurantId(Long restaurantId);
 
-    MenuItem findByRestaurntIdAndMenuItemId(Long restaurantId, Long menuItemId);
+    @Query(value = "SELECT * FROM public.menu_item WHERE restaurant_id = ?1 AND id =?2", nativeQuery = true)
+    MenuItem findByRestaurantIdAndMenuItemId(Long restaurantId, Long menuItemId);
 }

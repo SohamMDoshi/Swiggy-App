@@ -21,8 +21,8 @@ public class MenuItemServiceImpl implements MenuItemService{
     private RestaurantRepository restaurantRepository;
 
     @Override
-    public List<MenuItem> getList(Long restaurantId) {
-        return menuItemRepository.findByRestaurntId(restaurantId);
+    public List<MenuItem> getAll(Long restaurantId) {
+        return menuItemRepository.findByRestaurantId(restaurantId);
     }
 
     @Override
@@ -31,9 +31,9 @@ public class MenuItemServiceImpl implements MenuItemService{
     }
 
     @Override
-    public MenuItem getDetails(Long restaurantId, Long menuItemId) {
+    public MenuItem get(Long restaurantId, Long menuItemId) {
         restaurantRepository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
-        return menuItemRepository.findByRestaurntIdAndMenuItemId(restaurantId,menuItemId);
+        return menuItemRepository.findByRestaurantIdAndMenuItemId(restaurantId,menuItemId);
     }
 
     @Override

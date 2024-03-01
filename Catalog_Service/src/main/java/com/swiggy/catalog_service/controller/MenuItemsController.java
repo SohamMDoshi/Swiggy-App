@@ -12,37 +12,37 @@ import java.util.List;
 
 @RestController
 @RequestMapping("restaurants/{restaurantId}/menu-items")
-public class MenuItemController {
+public class MenuItemsController {
 
     @Autowired
     private MenuItemService menuItemService;
 
     @PostMapping
-    public ResponseEntity<MenuItem> createMenuItem(@PathVariable Long restaurantId, @RequestBody MenuItem menuItem) {
+    public ResponseEntity<MenuItem> create(@PathVariable Long restaurantId, @RequestBody MenuItem menuItem) {
         MenuItem menuItem1 = menuItemService.addNew(restaurantId,menuItem);
         return new ResponseEntity<>(menuItem1, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<MenuItem>> getListOfMenuItem(@PathVariable Long restaurantId) {
-        List<MenuItem> menuItems = menuItemService.getList(restaurantId);
+    public ResponseEntity<List<MenuItem>> getAll(@PathVariable Long restaurantId) {
+        List<MenuItem> menuItems = menuItemService.getAll(restaurantId);
         return new ResponseEntity<>(menuItems, HttpStatus.OK);
     }
 
     @GetMapping("/{menuItemId}")
-    public ResponseEntity<MenuItem> getDetailsOfMenuItem(@PathVariable Long restaurantId,@PathVariable Long menuItemId) {
-        MenuItem menuItem = menuItemService.getDetails(restaurantId,menuItemId);
+    public ResponseEntity<MenuItem> get(@PathVariable Long restaurantId,@PathVariable Long menuItemId) {
+        MenuItem menuItem = menuItemService.get(restaurantId,menuItemId);
         return new ResponseEntity<>(menuItem, HttpStatus.OK);
     }
 
     @PutMapping("/{menuItemId}")
-    public ResponseEntity<MenuItem> updateMenuItem(@PathVariable Long menuItemId, @RequestBody UpdateMenuItemRequest request) {
+    public ResponseEntity<MenuItem> update(@PathVariable Long menuItemId, @RequestBody UpdateMenuItemRequest request) {
         MenuItem menuItem = menuItemService.updateDetails(menuItemId,request);
         return new ResponseEntity<>(menuItem, HttpStatus.OK);
     }
 
     @DeleteMapping("/{menuItemId}")
-    public ResponseEntity<String> deleteMenuItem(@PathVariable Long menuItemId) {
+    public ResponseEntity<String> delete(@PathVariable Long menuItemId) {
         String msg = menuItemService.delete(menuItemId);
         return new ResponseEntity<>(msg,HttpStatus.ACCEPTED);
     }

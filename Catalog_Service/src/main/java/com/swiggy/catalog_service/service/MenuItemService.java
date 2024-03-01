@@ -7,10 +7,10 @@ import java.util.List;
 
 public interface MenuItemService {
 
-    List<MenuItem> getList(Long restaurantId);
+    List<MenuItem> getAll(Long restaurantId);
     MenuItem addNew(Long restaurantId, MenuItem menuItem);
 
-    MenuItem getDetails(Long restaurantId, Long menuItemId);
+    MenuItem get(Long restaurantId, Long menuItemId);
 
     MenuItem updateDetails(Long menuItemId, UpdateMenuItemRequest request);
 
