@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package fulfillment;
+
+option go_package = "/fulfillment";
+
+message Location {
+  double latitude = 1;
+  double longitude = 2;
+}
+
+message DeliveryPersonnel {
+  string id = 1;
+  string name = 2;
+  Location location = 3;
+  bool availability = 4;
+}
+
+message AssignedOrder {
+  string id = 1;
+  string order_id = 2;
+  string delivery_personnel_id = 3;
+  enum Status {
+    ASSIGNED = 0;
+    IN_TRANSIT = 1;
+    DELIVERED = 2;
+  }
+  Status status = 4;
+}
+
+service FulfillmentService {
+  rpc GetDeliveryPersonnelByID(GetDeliveryPersonnelByIDRequest) returns (DeliveryPersonnel);
+  rpc AssignOrder(AssignOrderRequest) returns (AssignedOrder);
+}
+
+message GetDeliveryPersonnelByIDRequest {
+  string id = 1;
+}
+
+message AssignOrderRequest {
+  string order_id = 1;
+  string delivery_personnel_id = 2;
+}
