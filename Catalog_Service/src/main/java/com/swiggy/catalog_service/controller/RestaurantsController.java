@@ -8,8 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/restaurants")
+@RequestMapping("/catalog-service/restaurants")
 public class RestaurantsController {
 
     @Autowired
@@ -20,6 +22,12 @@ public class RestaurantsController {
     public ResponseEntity<Restaurant> create(@RequestBody RestaurantRequest request) {
         Restaurant restaurant = restaurantService.create(request);
         return new ResponseEntity<>(restaurant, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Restaurant>> getAll(){
+        List<Restaurant> restaurants = restaurantService.getAll();
+        return new ResponseEntity<>(restaurants,HttpStatus.OK);
     }
 
     @GetMapping("/{restaurantId}")

@@ -15,12 +15,15 @@ public class Restaurant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @OneToOne
     private Location location;
 
     public Restaurant(RestaurantRequest request) {
+        this.name = request.getName();
+        this.location = request.getLocation();
     }
 
     public void update(RestaurantRequest request) {
+        this.name = request.getName();
+        this.location = request.getLocation();
     }
 }

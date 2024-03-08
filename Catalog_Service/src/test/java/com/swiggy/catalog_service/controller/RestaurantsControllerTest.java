@@ -2,9 +2,9 @@ package com.swiggy.catalog_service.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swiggy.catalog_service.entity.Restaurant;
-import com.swiggy.catalog_service.repository.RestaurantRepository;
 import com.swiggy.catalog_service.requestModels.RestaurantRequest;
 import com.swiggy.catalog_service.service.RestaurantService;
+import com.swiggy.catalog_service.service.RestaurantServiceTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RestaurantRequest {
-    private String restaurantName;
+    private String name;
     private Location location;
 }

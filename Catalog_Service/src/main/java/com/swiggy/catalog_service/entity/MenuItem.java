@@ -17,6 +17,7 @@ public class MenuItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String name;
     private Double price;
 
@@ -27,5 +28,7 @@ public class MenuItem {
     private Restaurant restaurant;
 
     public void update(UpdateMenuItemRequest request) {
+        this.name = request.getName();
+        this.price = request.getPrice();
     }
 }

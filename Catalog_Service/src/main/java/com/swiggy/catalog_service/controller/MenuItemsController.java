@@ -2,6 +2,7 @@ package com.swiggy.catalog_service.controller;
 
 import com.swiggy.catalog_service.entity.MenuItem;
 import com.swiggy.catalog_service.requestModels.UpdateMenuItemRequest;
+import com.swiggy.catalog_service.response.MenuItemResponse;
 import com.swiggy.catalog_service.service.MenuItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,9 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("restaurants/{restaurantId}/menu-items")
+@RequestMapping("/catalog-service/restaurants/{restaurantId}/menu-items")
 public class MenuItemsController {
 
     @Autowired
@@ -25,15 +27,22 @@ public class MenuItemsController {
 
     @GetMapping
     public ResponseEntity<List<MenuItem>> getAll(@PathVariable Long restaurantId) {
-        List<MenuItem> menuItems = menuItemService.getAll(restaurantId);
-        return new ResponseEntity<>(menuItems, HttpStatus.OK);
+        List<MenuItem> menuItems1 = menuItemService.getAll(restaurantId);
+        return new ResponseEntity<>(menuItems1, HttpStatus.OK);
     }
+
 
     @GetMapping("/{menuItemId}")
     public ResponseEntity<MenuItem> get(@PathVariable Long restaurantId,@PathVariable Long menuItemId) {
         MenuItem menuItem = menuItemService.get(restaurantId,menuItemId);
         return new ResponseEntity<>(menuItem, HttpStatus.OK);
     }
+
+//    @GetMapping("/{menuItemId}")
+//    public ResponseEntity<MenuItemResponse> getMenuList(@PathVariable Long restaurantId, @RequestParam List<Long> menuItemsIds) {
+//        MenuItemResponse response = menuItemService.getMenuItemsByRestaurant(restaurantId,menuItemsIds);
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
 
     @PutMapping("/{menuItemId}")
     public ResponseEntity<MenuItem> update(@PathVariable Long menuItemId, @RequestBody UpdateMenuItemRequest request) {

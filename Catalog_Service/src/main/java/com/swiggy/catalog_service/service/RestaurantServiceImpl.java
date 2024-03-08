@@ -30,7 +30,7 @@ public class RestaurantServiceImpl implements RestaurantService{
     public Restaurant update(Long restaurantId, RestaurantRequest request) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
         restaurant.update(request);
-        return null;
+        return restaurantRepository.save(restaurant);
     }
 
     @Override
