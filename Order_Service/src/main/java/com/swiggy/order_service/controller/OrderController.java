@@ -35,6 +35,15 @@ public class OrderController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping
+    public ResponseEntity<OrderResponse> create(@PathVariable Long userId, @RequestBody OrderRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username).orElseThrow(()-> new UserNotFoundException(username));
+        OrderResponse response = orderService.create(request,user);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping("/{orderId}")
     public ResponseEntity<Order> get(@PathVariable Long userId,@PathVariable Long orderId){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

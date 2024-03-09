@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package fulfillment;
+
+option java_multiple_files = true;
+
+message Location {
+  double latitude = 1;
+  double longitude = 2;
+}
+
+message DeliveryPersonnel {
+  int64 id = 1;
+  string name = 2;
+  Location location = 3;
+  bool availability = 4;
+}
+
+message AssignedOrder {
+  int64 id = 1;
+  int64 order_id = 2;
+  int64 delivery_personnel_id = 3;
+  enum Status {
+    ASSIGNED = 0;
+    IN_TRANSIT = 1;
+    DELIVERED = 2;
+  }
+  Status status = 4;
+}
+
+service FulfillmentService {
+  rpc GetDeliveryPersonnelByID(GetDeliveryPersonnelByIDRequest) returns (DeliveryPersonnel);
+  rpc AssignOrder(AssignOrderRequest) returns (AssignedOrder);
+}
+
+message GetDeliveryPersonnelByIDRequest {
+  int64 id = 1;
+}
+
+message AssignOrderRequest {
+  int64 order_id = 1;
+  Location restaurant_location = 2;
+  Location customer_location = 3;
+}

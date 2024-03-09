@@ -1,5 +1,6 @@
 package com.swiggy.order_service.service;
 
+import com.swiggy.order_service.client.MenuItemsClient;
 import com.swiggy.order_service.entity.Order;
 import com.swiggy.order_service.entity.OrderItem;
 import com.swiggy.order_service.entity.User;
@@ -28,10 +29,13 @@ public class OrderServiceImpl implements OrderService{
     private OrderRepository orderRepository;
 
     @Autowired
-    private RestTemplate restTemplate;
-
-    @Autowired
     private OrderItemService orderItemService;
+
+    private final MenuItemsClient menuItemsClient;
+
+    public OrderServiceImpl(MenuItemsClient menuItemsClient) {
+        this.menuItemsClient = menuItemsClient;
+    }
 
     @Override
     public OrderResponse create(List<OrderRequest> requests, User user) {
@@ -43,17 +47,10 @@ public class OrderServiceImpl implements OrderService{
                                 .collect(Collectors.toList())
                 ));
 
-        String url = "http://localhost:8080/catalog-service/restaurants/menu-items";
-        ResponseEntity<List<MenuItemResponse>> response = getListResponseEntity(restaurantIdToMenuIdsMap, url);
+        List<MenuItemResponse> menuItemsResponse  = menuItemsClient.getListResponseEntity(restaurantIdToMenuIdsMap);
 
-        List<MenuItemResponse> menuItemsResponse = response.getBody();
-        System.out.println(menuItemsResponse);
         setQuantity(requests, menuItemsResponse);
-
-        Double totalPrice = 0.0;
-        for(MenuItemResponse res : menuItemsResponse) {
-            totalPrice+= res.calculateTotalPrice();
-        }
+        Double totalPrice = getTotalPrice(menuItemsResponse);
 
         Order order = new Order(user,totalPrice);
         Order savedOrder = orderRepository.save(order);
@@ -62,19 +59,22 @@ public class OrderServiceImpl implements OrderService{
         return new OrderResponse(order,menuItemsResponse);
     }
 
-    private ResponseEntity<List<MenuItemResponse>> getListResponseEntity(Map<Long, List<Long>> restaurantIdToMenuIdsMap, String url) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<Long, List<Long>>> requestEntity = new HttpEntity<>(restaurantIdToMenuIdsMap, headers);
-
-        return restTemplate.exchange(
-                url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<List<MenuItemResponse>>() {});
+    private static Double getTotalPrice(List<MenuItemResponse> menuItemsResponse) {
+        Double totalPrice = 0.0;
+        for(MenuItemResponse res : menuItemsResponse) {
+            totalPrice+= res.calculateTotalPrice();
+        }
+        return totalPrice;
     }
 
-
+    @Override
+    public OrderResponse create(OrderRequest request, User user) {
+        return null;
+    }
 
     @Override
     public Order get(Long id) {
         return orderRepository.findById(id).orElseThrow(()-> new OrderNotFoundException(id));
     }
+
 }

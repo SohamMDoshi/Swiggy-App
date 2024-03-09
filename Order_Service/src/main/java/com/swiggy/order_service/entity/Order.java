@@ -27,4 +27,8 @@ public class Order {
         this.user = user;
         this.totalPrice = totalPrice;
     }
+
+    public void assignDeliveryPersonnel(Order order) {
+
+    }
 }

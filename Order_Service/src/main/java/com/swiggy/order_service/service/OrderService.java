@@ -10,6 +10,8 @@ import java.util.List;
 public interface OrderService {
 
     OrderResponse create(List<OrderRequest> request, User user);
+
+    OrderResponse create(OrderRequest request, User user);
     Order get(Long id);
 
 }
