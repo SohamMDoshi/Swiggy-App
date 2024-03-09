@@ -25,8 +25,11 @@ public class User {
     @NotBlank(message = "Password is required")
     private String password;
 
-    public User(String username,String password) {
+    private Location location;
+
+    public User(String username,String password,Location location) {
         this.username = username;
         this.password = password;
+        this.location = location;
     }
 }

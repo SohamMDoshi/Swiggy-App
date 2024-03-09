@@ -15,7 +15,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MenuItemResponse {
-    private Restaurant restaurantId;
+    private Restaurant restaurant;
     private List<MenuItem> menuItems;
 
     public static void setQuantity(List<OrderRequest> requests, List<MenuItemResponse> menuItemsResponse) {
@@ -23,21 +23,18 @@ public class MenuItemResponse {
             Long restaurantId = request.getRestaurantId();
             List<OrderItem> orderItems = request.getOrderItems();
 
-            // Find the corresponding MenuItemResponse in the menuItemsResponse list
             Optional<MenuItemResponse> menuItemResponseOptional = menuItemsResponse.stream()
-                    .filter(menuItemResponse -> menuItemResponse.getRestaurantId().equals(restaurantId))
+                    .filter(menuItemResponse -> menuItemResponse.getRestaurant().getId().equals(restaurantId))
                     .findFirst();
 
-            // If MenuItemResponse found, update its menuItems with quantity information
             menuItemResponseOptional.ifPresent(menuItemResponse -> {
                 List<MenuItem> menuItems = menuItemResponse.getMenuItems();
                 for (MenuItem menuItem : menuItems) {
                     Long menuItemId = menuItem.getId();
-                    // Find the matching OrderItem
                     Optional<OrderItem> matchingOrderItem = orderItems.stream()
                             .filter(orderItem -> orderItem.getMenuItemId().equals(menuItemId))
                             .findFirst();
-                    // If matching OrderItem found, set the quantity
+
                     matchingOrderItem.ifPresent(orderItem -> menuItem.setQuantity(orderItem.getQuantity()));
                 }
             });

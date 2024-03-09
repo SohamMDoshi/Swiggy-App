@@ -12,4 +12,12 @@ import lombok.NoArgsConstructor;
 public class Location {
     private Double latitude;
     private Double longitude;
+
+
+    public fulfillment.Location covertToProto() {
+        return fulfillment.Location.newBuilder()
+                .setLatitude(this.getLatitude())
+                .setLongitude(this.getLongitude())
+                .build();
+    }
 }

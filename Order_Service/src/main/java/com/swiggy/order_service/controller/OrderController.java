@@ -5,7 +5,8 @@ import com.swiggy.order_service.entity.User;
 import com.swiggy.order_service.exception.UserNotFoundException;
 import com.swiggy.order_service.repository.UserRepository;
 import com.swiggy.order_service.requestModel.OrderRequest;
-import com.swiggy.order_service.responseModel.OrderResponse;
+import com.swiggy.order_service.responseModel.MultipleRestaurantOrderResponse;
+import com.swiggy.order_service.responseModel.SingleRestaurantOrderResponse;
 import com.swiggy.order_service.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,21 +27,22 @@ public class OrderController {
     @Autowired
     private UserRepository userRepository;
 
+
     @PostMapping
-    public ResponseEntity<OrderResponse> create(@PathVariable Long userId, @RequestBody List<OrderRequest> request) {
+    public ResponseEntity<SingleRestaurantOrderResponse> create(@PathVariable Long userId, @RequestBody OrderRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User user = userRepository.findByUsername(username).orElseThrow(()-> new UserNotFoundException(username));
-        OrderResponse response = orderService.create(request,user);
+        SingleRestaurantOrderResponse response = orderService.create(request,user);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<OrderResponse> create(@PathVariable Long userId, @RequestBody OrderRequest request) {
+    @PostMapping("/multi-restaurants")
+    public ResponseEntity<MultipleRestaurantOrderResponse> create(@PathVariable Long userId, @RequestBody List<OrderRequest> request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User user = userRepository.findByUsername(username).orElseThrow(()-> new UserNotFoundException(username));
-        OrderResponse response = orderService.create(request,user);
+        MultipleRestaurantOrderResponse response = orderService.create(request,user);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

@@ -8,12 +8,10 @@ import com.swiggy.order_service.exception.OrderNotFoundException;
 import com.swiggy.order_service.repository.OrderRepository;
 import com.swiggy.order_service.requestModel.OrderRequest;
 import com.swiggy.order_service.responseModel.MenuItemResponse;
-import com.swiggy.order_service.responseModel.OrderResponse;
+import com.swiggy.order_service.responseModel.MultipleRestaurantOrderResponse;
+import com.swiggy.order_service.responseModel.SingleRestaurantOrderResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 
 import java.util.List;
@@ -37,8 +35,23 @@ public class OrderServiceImpl implements OrderService{
         this.menuItemsClient = menuItemsClient;
     }
 
+
     @Override
-    public OrderResponse create(List<OrderRequest> requests, User user) {
+    public SingleRestaurantOrderResponse create(OrderRequest request, User user) {
+        List<Long> menuItemIds = request.getOrderItems().stream()
+                .map(OrderItem::getMenuItemId).toList();
+        MenuItemResponse response = menuItemsClient.getMenuList(request.getRestaurantId(),menuItemIds);
+        Double totalPrice = response.calculateTotalPrice();
+
+        Order order = new Order(user,totalPrice);
+        Order savedOrder = orderRepository.save(order);
+        orderItemService.create(request.getOrderItems(),savedOrder);
+        return new SingleRestaurantOrderResponse(order,response);
+    }
+
+
+    @Override
+    public MultipleRestaurantOrderResponse create(List<OrderRequest> requests, User user) {
         Map<Long, List<Long>> restaurantIdToMenuIdsMap = requests.stream()
                 .collect(Collectors.toMap(
                         OrderRequest::getRestaurantId,
@@ -56,15 +69,7 @@ public class OrderServiceImpl implements OrderService{
         Order savedOrder = orderRepository.save(order);
 
         for(OrderRequest request : requests) orderItemService.create(request.getOrderItems(),savedOrder);
-        return new OrderResponse(order,menuItemsResponse);
-    }
-
-    @Override
-    public OrderResponse create(OrderRequest request, User user) {
-        List<Long> menuItemIds = request.getOrderItems().stream()
-                .map(OrderItem::getMenuItemId).toList();
-        MenuItemResponse response = menuItemsClient.getMenuList(request.getRestaurantId(),menuItemIds);
-        return null;
+        return new MultipleRestaurantOrderResponse(order,menuItemsResponse);
     }
 
     @Override
