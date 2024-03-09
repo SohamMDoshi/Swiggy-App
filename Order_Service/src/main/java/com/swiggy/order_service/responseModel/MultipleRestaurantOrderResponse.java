@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderResponse {
+public class MultipleRestaurantOrderResponse {
     private Order order;
     private List<MenuItemResponse> menuItems;
 }

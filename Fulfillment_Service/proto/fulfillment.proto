@@ -10,16 +10,16 @@ message Location {
 }
 
 message DeliveryPersonnel {
-  string id = 1;
+  int64 id = 1;
   string name = 2;
   Location location = 3;
   bool availability = 4;
 }
 
 message AssignedOrder {
-  string id = 1;
-  string order_id = 2;
-  string delivery_personnel_id = 3;
+  int64 id = 1;
+  int64 order_id = 2;
+  int64 delivery_personnel_id = 3;
   enum Status {
     ASSIGNED = 0;
     IN_TRANSIT = 1;
@@ -34,10 +34,11 @@ service FulfillmentService {
 }
 
 message GetDeliveryPersonnelByIDRequest {
-  string id = 1;
+  int64 id = 1;
 }
 
 message AssignOrderRequest {
-  string order_id = 1;
-  string delivery_personnel_id = 2;
+  int64 order_id = 1;
+  Location restaurant_location = 2;
+  Location customer_location = 3;
 }
