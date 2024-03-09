@@ -16,7 +16,7 @@ public class MenuItemsClient {
     private RestTemplate restTemplate;
 
 
-    public List<MenuItemResponse> getMenuListAndRestaurant(Map<Long, List<Long>> restaurantIdToMenuIdsMap) {
+    public List<MenuItemResponse> getListOfRestaurantsAndMenuItems(Map<Long, List<Long>> restaurantIdToMenuIdsMap) {
         String url = "http://localhost:8080/catalog-service/restaurants/menu-items";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -30,8 +30,8 @@ public class MenuItemsClient {
         return response.getBody();
     }
 
-    public MenuItemResponse getMenuList(List<Long> menuItemIds, OrderRequest request) {
-        String url = "http://localhost:8080/catalog-service/restaurants/"+request.getRestaurantId()+"/menu-items/specific-list";
+    public MenuItemResponse getMenuList(Long restaurantId, List<Long> menuItemIds) {
+        String url = "http://localhost:8080/catalog-service/restaurants/"+restaurantId+"/menu-items/specific-list";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 

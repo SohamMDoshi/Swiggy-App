@@ -1,6 +1,7 @@
 package com.swiggy.order_service.responseModel;
 
 import com.swiggy.order_service.dto.MenuItem;
+import com.swiggy.order_service.dto.Restaurant;
 import com.swiggy.order_service.entity.OrderItem;
 import com.swiggy.order_service.requestModel.OrderRequest;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MenuItemResponse {
-    private Long restaurantId;
+    private Restaurant restaurantId;
     private List<MenuItem> menuItems;
 
     public static void setQuantity(List<OrderRequest> requests, List<MenuItemResponse> menuItemsResponse) {
