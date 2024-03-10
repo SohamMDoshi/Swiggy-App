@@ -108,7 +108,12 @@ func updateAssignedOrder(c *gin.Context) {
 		return
 	}
 
-	// Update assigned order status
+	// Check if the status is already "DELIVERED"
+	if assignedOrder.Status == "DELIVERED" {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "The order has already been delivered"})
+		return
+	}
+
 	assignedOrder.Status = requestBody.Status
 	db.Save(&assignedOrder)
 
