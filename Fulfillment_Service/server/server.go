@@ -40,7 +40,7 @@ func DatabaseConnection() *gorm.DB {
 	}
 	fmt.Println("Database connection successful...")
 
-	db.AutoMigrate(&model.DeliveryPersonnel{}, &model.AssignedOrder{})
+	db.AutoMigrate(&model.DeliveryPersonnel{}, &model.AssignedOrder{}, &model.DeliveryDetails{})
 
 	return db
 }
@@ -78,6 +78,17 @@ func (s *Server) AssignOrder(ctx context.Context, req *pb.AssignOrderRequest) (*
 		Status:              pb.AssignedOrder_ASSIGNED, // Set status to ASSIGNED
 	}
 
+	deliveryDetails := &model.DeliveryDetails{
+		OrderId: req.OrderId,
+		RestaurantLocation: req.RestaurantLocation,
+		CustomerLocation: req.CustomerLocation,
+	}
+
+	err1 := s.saveDeliveryDetails(deliveryDetails)
+	if err1 != nil {
+		return nil, err1
+	}
+
 	result, err := s.saveAssignedOrder(assignedOrder)
 	if err != nil {
 		return nil, err
@@ -90,6 +101,15 @@ func (s *Server) AssignOrder(ctx context.Context, req *pb.AssignOrderRequest) (*
 
 	return assignedOrder, nil
 }
+
+func (s *Server) saveDeliveryDetails(details *model.DeliveryDetails) error {
+	result := s.DB.Create(details)
+	if result.Error != nil {
+		return fmt.Errorf("failed to save delivery details: %v", result.Error)
+	}
+	return nil
+}
+
 
 func (s *Server) saveAssignedOrder(order *pb.AssignedOrder) (*model.AssignedOrder, error) {
 	// Convert AssignedOrder to model.AssignedOrder
