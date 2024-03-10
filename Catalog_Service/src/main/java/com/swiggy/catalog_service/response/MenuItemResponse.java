@@ -1,6 +1,7 @@
 package com.swiggy.catalog_service.response;
 
 import com.swiggy.catalog_service.entity.MenuItem;
+import com.swiggy.catalog_service.entity.Restaurant;
 import jdk.dynalink.linker.LinkerServices;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MenuItemResponse {
-    private Long restaurantId;
+    private Restaurant restaurant;
     private List<MenuItem> menuItems;
 }

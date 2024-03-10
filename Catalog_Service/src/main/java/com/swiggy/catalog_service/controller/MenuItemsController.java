@@ -38,11 +38,11 @@ public class MenuItemsController {
         return new ResponseEntity<>(menuItem, HttpStatus.OK);
     }
 
-//    @GetMapping("/{menuItemId}")
-//    public ResponseEntity<MenuItemResponse> getMenuList(@PathVariable Long restaurantId, @RequestParam List<Long> menuItemsIds) {
-//        MenuItemResponse response = menuItemService.getMenuItemsByRestaurant(restaurantId,menuItemsIds);
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
+    @GetMapping("/specific-list")
+    public ResponseEntity<MenuItemResponse> getMenuList(@PathVariable Long restaurantId, @RequestParam List<Long> menuItemsIds) {
+        MenuItemResponse response = menuItemService.getMenuItemsByRestaurant(restaurantId,menuItemsIds);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @PutMapping("/{menuItemId}")
     public ResponseEntity<MenuItem> update(@PathVariable Long menuItemId, @RequestBody UpdateMenuItemRequest request) {

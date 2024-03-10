@@ -22,16 +22,3 @@ public interface MenuItemService {
     String delete(Long menuItemId);
 
 }
-
-
-
-
-/*
-*
-     - GET : Get the menu items of a specific restaurant.  - /restaurants/{restaurantID}/menu
-     - POST : Add a new menu item to the restaurant's menu (accessible to super admin).
-     - GET : Get details of a specific menu item. /restaurants/{restaurantID}/menu/{menuItemID}
-     - PUT : Update details of a menu item (accessible to super admin).
-     - DELETE : Delete a menu item (accessible to super admin).
-
-* */

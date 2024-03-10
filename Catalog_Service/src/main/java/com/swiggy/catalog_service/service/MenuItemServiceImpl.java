@@ -35,16 +35,18 @@ public class MenuItemServiceImpl implements MenuItemService{
     public List<MenuItemResponse> getMenuItemsByRestaurant(Map<Long, List<Long>> restaurantMenuItemIdsMap) {
         List<MenuItemResponse> response = new ArrayList<>();
         restaurantMenuItemIdsMap.forEach((restaurantId, menuItemIds) -> {
+            Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
             List<MenuItem> menuItems = menuItemRepository.findByRestaurant_IdAndIdIn(restaurantId,menuItemIds);
-            response.add(new MenuItemResponse(restaurantId, menuItems));
+            response.add(new MenuItemResponse(restaurant, menuItems));
         });
         return response;
     }
 
     @Override
     public MenuItemResponse getMenuItemsByRestaurant(Long restaurantId, List<Long> menuItemIds) {
-         List<MenuItem> menuItems = menuItemRepository.findByRestaurant_IdAndIdIn(restaurantId,menuItemIds);
-         return new MenuItemResponse(restaurantId,menuItems);
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+        List<MenuItem> menuItems = menuItemRepository.findByRestaurant_IdAndIdIn(restaurantId,menuItemIds);
+         return new MenuItemResponse(restaurant,menuItems);
     }
 
     @Override
