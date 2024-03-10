@@ -1,5 +1,6 @@
 package com.swiggy.order_service.service;
 
+import com.swiggy.order_service.entity.Location;
 import com.swiggy.order_service.entity.User;
 import com.swiggy.order_service.exception.UserAlreadyExistsException;
 import com.swiggy.order_service.repository.UserRepository;
@@ -17,12 +18,12 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public User add(String username, String password) throws UserAlreadyExistsException {
+    public User add(String username, String password, Location location) throws UserAlreadyExistsException {
         if (userRepository.findByUsername(username).isPresent()) {
             throw new UserAlreadyExistsException("User already exists with username " + username);
         }
         String encodedPassword = passwordEncoder.encode(password);
-        User user = new User(username, encodedPassword);
+        User user = new User(username, encodedPassword,location);
         return userRepository.save(user);
     }
 

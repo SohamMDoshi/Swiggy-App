@@ -18,26 +18,20 @@ public class MenuItemResponse {
     private Restaurant restaurant;
     private List<MenuItem> menuItems;
 
-    public static void setQuantity(List<OrderRequest> requests, List<MenuItemResponse> menuItemsResponse) {
-        for (OrderRequest request : requests) {
-            Long restaurantId = request.getRestaurantId();
-            List<OrderItem> orderItems = request.getOrderItems();
+    public void setQuantity(OrderRequest request) {
+        Long restaurantId = request.getRestaurantId();
+        List<OrderItem> orderItems = request.getOrderItems();
 
-            Optional<MenuItemResponse> menuItemResponseOptional = menuItemsResponse.stream()
-                    .filter(menuItemResponse -> menuItemResponse.getRestaurant().getId().equals(restaurantId))
-                    .findFirst();
+        if (this.restaurant != null && this.restaurant.getId().equals(restaurantId)) {
+            List<MenuItem> menuItems = this.menuItems;
+            for (MenuItem menuItem : menuItems) {
+                Long menuItemId = menuItem.getId();
+                Optional<OrderItem> matchingOrderItem = orderItems.stream()
+                        .filter(orderItem -> orderItem.getMenuItemId().equals(menuItemId))
+                        .findFirst();
 
-            menuItemResponseOptional.ifPresent(menuItemResponse -> {
-                List<MenuItem> menuItems = menuItemResponse.getMenuItems();
-                for (MenuItem menuItem : menuItems) {
-                    Long menuItemId = menuItem.getId();
-                    Optional<OrderItem> matchingOrderItem = orderItems.stream()
-                            .filter(orderItem -> orderItem.getMenuItemId().equals(menuItemId))
-                            .findFirst();
-
-                    matchingOrderItem.ifPresent(orderItem -> menuItem.setQuantity(orderItem.getQuantity()));
-                }
-            });
+                matchingOrderItem.ifPresent(orderItem -> menuItem.setQuantity(orderItem.getQuantity()));
+            }
         }
     }
 

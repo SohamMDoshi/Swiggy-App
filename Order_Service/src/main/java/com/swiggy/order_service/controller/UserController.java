@@ -25,9 +25,9 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<User> registerUser(@Valid @RequestBody UserRegistrationRequest request) {
-        User users = userService.add(request.getUsername(), request.getPassword());
+        User users = userService.add(request.getUsername(), request.getPassword(),request.getLocation());
         return new ResponseEntity<>(users, HttpStatus.CREATED);
     }
 

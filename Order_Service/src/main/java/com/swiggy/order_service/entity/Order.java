@@ -1,6 +1,7 @@
 package com.swiggy.order_service.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.swiggy.order_service.dto.AssignedOrderDetails;
 import com.swiggy.order_service.responseModel.MenuItemResponse;
 import fulfillment.AssignOrderRequest;
 import fulfillment.AssignedOrder;
@@ -39,7 +40,7 @@ public class Order {
 
     private final static Logger log = LoggerFactory.getLogger(Order.class);
 
-    public AssignedOrder assignDeliveryPersonnel(MenuItemResponse response) {
+    public AssignedOrderDetails assignDeliveryPersonnel(MenuItemResponse response) {
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9090)
                 .usePlaintext()
                 .build();
@@ -55,6 +56,6 @@ public class Order {
 
         log.info("Server message: {}",response);
         channel.shutdown();
-        return assignedOrder;
+        return new AssignedOrderDetails(assignedOrder);
     }
 }
