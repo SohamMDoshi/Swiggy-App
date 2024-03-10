@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"strconv"
 
 	"fulfillment_service/model"
 	pb "fulfillment_service/proto"
@@ -72,7 +73,15 @@ func authMiddleware(c *gin.Context) {
 
 func updateAssignedOrder(c *gin.Context) {
 	// Parse assigned order ID from URL params
+	deliveryPersonnelIDStr := c.Param("delivery_personnel_id")
 	assignedOrderID := c.Param("assigned_order_id")
+
+	// Convert string delivery personnel ID to int64
+	deliveryPersonnelID, err := strconv.ParseInt(deliveryPersonnelIDStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid delivery personnel ID"})
+		return
+	}
 
 	// Parse status from request body
 	var requestBody struct {
@@ -86,9 +95,14 @@ func updateAssignedOrder(c *gin.Context) {
 	// Fetch delivery personnel from context
 	deliveryPersonnel, _ := c.Get("delivery_personnel")
 
+	if deliveryPersonnelID != deliveryPersonnel.(*model.DeliveryPersonnel).Id {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
 	// Fetch assigned order from database
 	assignedOrder := &model.AssignedOrder{}
-	result := db.Where("id = ? AND delivery_personnel_id = ?", assignedOrderID, deliveryPersonnel.(*model.DeliveryPersonnel).Id).First(assignedOrder)
+	result := db.Where("id = ? AND delivery_personnel_id = ?", assignedOrderID, deliveryPersonnelID).First(assignedOrder)
 	if result.Error != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Assigned order not found"})
 		return

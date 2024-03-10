@@ -4,7 +4,7 @@ go 1.21.6
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	golang.org/x/crypto v0.18.0
+	golang.org/x/crypto v0.18.0 // indirect
 	google.golang.org/grpc v1.62.0
 	google.golang.org/protobuf v1.32.0
 	gorm.io/driver/postgres v1.5.6
