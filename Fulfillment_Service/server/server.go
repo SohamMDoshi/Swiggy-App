@@ -8,6 +8,7 @@ import (
 	"math"
 	"net"
 
+	"fulfillment_service/model"
 	pb "fulfillment_service/proto"
 
 	"google.golang.org/grpc"
@@ -18,29 +19,6 @@ import (
 type Server struct {
 	DB *gorm.DB
 	pb.UnimplementedFulfillmentServiceServer
-}
-
-func init() {
-	DatabaseConnection()
-}
-
-type Location struct {
-	Latitude  float64 `gorm:"type:double precision"`
-	Longitude float64 `gorm:"type:double precision"`
-}
-
-type DeliveryPersonnel struct {
-	ID           uint     `gorm:"primaryKey;autoIncrement"`
-	Name         string   `gorm:"not null"`
-	Location     Location `gorm:"embedded;embeddedPrefix:location_"`
-	Availability bool     `gorm:"not null"`
-}
-
-type AssignedOrder struct {
-	ID                  uint   `gorm:"primaryKey;autoIncrement"`
-	OrderID             string `gorm:"not null"`
-	DeliveryPersonnelID string `gorm:"not null"`
-	Status              string `gorm:"not null"`
 }
 
 func DatabaseConnection() *gorm.DB {
@@ -62,7 +40,7 @@ func DatabaseConnection() *gorm.DB {
 	}
 	fmt.Println("Database connection successful...")
 
-	db.AutoMigrate(&DeliveryPersonnel{}, &AssignedOrder{})
+	db.AutoMigrate(&model.DeliveryPersonnel{}, &model.AssignedOrder{})
 
 	return db
 }
@@ -79,7 +57,7 @@ func (s *Server) AssignOrder(ctx context.Context, req *pb.AssignOrderRequest) (*
 	}
 
 	// Fetch all available delivery personnel from the database
-	availablePersonnel, err := s.fetchAvailableDeliveryPersonnel(ctx)
+	availablePersonnel, err := s.fetchAvailableDeliveryPersonnel()
 	if err != nil {
 		return nil, err
 	}
@@ -97,22 +75,58 @@ func (s *Server) AssignOrder(ctx context.Context, req *pb.AssignOrderRequest) (*
 	assignedOrder := &pb.AssignedOrder{
 		OrderId:             req.OrderId,
 		DeliveryPersonnelId: closestDeliveryPersonnel.Id,
-		Status:              pb.AssignedOrder_Status(0), // Set status to ASSIGNED
+		Status:              pb.AssignedOrder_ASSIGNED, // Set status to ASSIGNED
+	}
+
+	result, err := s.saveAssignedOrder(assignedOrder)
+	if err != nil {
+		return nil, err
+	}
+	assignedOrder.Id = result.ID
+
+	if err := s.updateDeliveryPersonnelAvailability(closestDeliveryPersonnel.Id, false); err != nil {
+		return nil, err
 	}
 
 	return assignedOrder, nil
 }
 
-func (s *Server) fetchAvailableDeliveryPersonnel(ctx context.Context) ([]*pb.DeliveryPersonnel, error) {
-	var availablePersonnel []*pb.DeliveryPersonnel
+func (s *Server) saveAssignedOrder(order *pb.AssignedOrder) (*model.AssignedOrder, error) {
+	// Convert AssignedOrder to model.AssignedOrder
+	dbOrder := &model.AssignedOrder{
+		OrderID:             order.OrderId,
+		DeliveryPersonnelID: order.DeliveryPersonnelId,
+		Status:              order.Status.String(),
+	}
+
+	// Save the order to the database using GORM
+	result := s.DB.Create(dbOrder)
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to save assigned order: %v", result.Error)
+	}
+
+	// Return the saved order
+	return dbOrder, nil
+}
+
+func (s *Server) updateDeliveryPersonnelAvailability(id int64, availability bool) error {
+	// Update the availability of the delivery personnel in the database
+	if err := s.DB.Model(&model.DeliveryPersonnel{}).Where("id = ?", id).Update("availability", availability).Error; err != nil {
+		return fmt.Errorf("failed to update delivery personnel availability: %v", err)
+	}
+	return nil
+}
+
+func (s *Server) fetchAvailableDeliveryPersonnel() ([]*model.DeliveryPersonnel, error) {
+	var availablePersonnel []*model.DeliveryPersonnel
 	if err := s.DB.Where("availability = ?", true).Find(&availablePersonnel).Error; err != nil {
 		return nil, err
 	}
 	return availablePersonnel, nil
 }
 
-func (s *Server) findClosestDeliveryPersonnel(restaurantLocation *pb.Location, availablePersonnel []*pb.DeliveryPersonnel) (*pb.DeliveryPersonnel, error) {
-	var closestDeliveryPersonnel *pb.DeliveryPersonnel
+func (s *Server) findClosestDeliveryPersonnel(restaurantLocation *pb.Location, availablePersonnel []*model.DeliveryPersonnel) (*model.DeliveryPersonnel, error) {
+	var closestDeliveryPersonnel *model.DeliveryPersonnel
 	minDistance := math.Inf(1)
 
 	for _, dp := range availablePersonnel {
@@ -130,7 +144,7 @@ func (s *Server) findClosestDeliveryPersonnel(restaurantLocation *pb.Location, a
 	return closestDeliveryPersonnel, nil
 }
 
-func calculateDistance(loc1, loc2 *pb.Location) float64 {
+func calculateDistance(loc1 *pb.Location, loc2 *model.Location) float64 {
 	// Using Haversine formula to calculate distance between two locations
 	const earthRadius = 6371 // Earth radius in kilometers
 	lat1 := toRadians(loc1.Latitude)
@@ -163,4 +177,5 @@ func main() {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+
 }
