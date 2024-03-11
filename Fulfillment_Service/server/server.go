@@ -108,25 +108,21 @@ func (s *Server) saveDeliveryDetails(details *model.DeliveryDetails) error {
 }
 
 func (s *Server) saveAssignedOrder(order *pb.AssignedOrder) (*model.AssignedOrder, error) {
-	// Convert AssignedOrder to model.AssignedOrder
 	dbOrder := &model.AssignedOrder{
 		OrderID:             order.OrderId,
 		DeliveryPersonnelID: order.DeliveryPersonnelId,
 		Status:              order.Status.String(),
 	}
 
-	// Save the order to the database using GORM
 	result := s.DB.Create(dbOrder)
 	if result.Error != nil {
 		return nil, fmt.Errorf("failed to save assigned order: %v", result.Error)
 	}
 
-	// Return the saved order
 	return dbOrder, nil
 }
 
 func (s *Server) updateDeliveryPersonnelAvailability(id int64, availability bool) error {
-	// Update the availability of the delivery personnel in the database
 	if err := s.DB.Model(&model.DeliveryPersonnel{}).Where("id = ?", id).Update("availability", availability).Error; err != nil {
 		return fmt.Errorf("failed to update delivery personnel availability: %v", err)
 	}
