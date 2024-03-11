@@ -56,7 +56,6 @@ func (s *Server) AssignOrder(ctx context.Context, req *pb.AssignOrderRequest) (*
 		return nil, errors.New("restaurant location is nil")
 	}
 
-	// Fetch all available delivery personnel from the database
 	availablePersonnel, err := s.fetchAvailableDeliveryPersonnel()
 	if err != nil {
 		return nil, err
@@ -65,23 +64,21 @@ func (s *Server) AssignOrder(ctx context.Context, req *pb.AssignOrderRequest) (*
 		return nil, errors.New("no available delivery personnel")
 	}
 
-	// Find the closest available delivery personnel
 	closestDeliveryPersonnel, err := s.findClosestDeliveryPersonnel(req.RestaurantLocation, availablePersonnel)
 	if err != nil {
 		return nil, err
 	}
 
-	// Assign the order to the closest available delivery personnel
 	assignedOrder := &pb.AssignedOrder{
 		OrderId:             req.OrderId,
 		DeliveryPersonnelId: closestDeliveryPersonnel.Id,
-		Status:              pb.AssignedOrder_ASSIGNED, // Set status to ASSIGNED
+		Status:              pb.AssignedOrder_ASSIGNED,
 	}
 
 	deliveryDetails := &model.DeliveryDetails{
-		OrderId: req.OrderId,
+		OrderId:            req.OrderId,
 		RestaurantLocation: req.RestaurantLocation,
-		CustomerLocation: req.CustomerLocation,
+		CustomerLocation:   req.CustomerLocation,
 	}
 
 	err1 := s.saveDeliveryDetails(deliveryDetails)
@@ -109,7 +106,6 @@ func (s *Server) saveDeliveryDetails(details *model.DeliveryDetails) error {
 	}
 	return nil
 }
-
 
 func (s *Server) saveAssignedOrder(order *pb.AssignedOrder) (*model.AssignedOrder, error) {
 	// Convert AssignedOrder to model.AssignedOrder
@@ -165,8 +161,7 @@ func (s *Server) findClosestDeliveryPersonnel(restaurantLocation *pb.Location, a
 }
 
 func calculateDistance(loc1 *pb.Location, loc2 *model.Location) float64 {
-	// Using Haversine formula to calculate distance between two locations
-	const earthRadius = 6371 // Earth radius in kilometers
+	const earthRadius = 6371
 	lat1 := toRadians(loc1.Latitude)
 	lon1 := toRadians(loc1.Longitude)
 	lat2 := toRadians(loc2.Latitude)

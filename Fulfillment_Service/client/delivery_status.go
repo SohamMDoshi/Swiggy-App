@@ -40,19 +40,15 @@ func main() {
 
 	router := gin.Default()
 
-	// Auth middleware to authenticate delivery personnel using basic auth
 	router.Use(authMiddleware)
 
-	// Route to handle the assigned order update
 	router.PUT("/fulfillment_service/delivery-personnels/:delivery_personnel_id/assigned-orders/:assigned_order_id", updateAssignedOrder)
 
 	router.Run(":8082")
 }
 
 func authMiddleware(c *gin.Context) {
-	// Retrieve username and password from request headers
 	username, password, _ := c.Request.BasicAuth()
-	// Authenticate the delivery personnel using basic auth
 	deliveryPersonnel := &model.DeliveryPersonnel{}
 	result := db.Where("name = ?", username).First(deliveryPersonnel)
 	if result.Error != nil {
@@ -60,30 +56,25 @@ func authMiddleware(c *gin.Context) {
 		return
 	}
 
-	// Check if delivery personnel exists and password is correct
 	if !reflect.DeepEqual(password, deliveryPersonnel.Password) {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
 
-	// Set delivery personnel in context for subsequent handlers
 	c.Set("delivery_personnel", deliveryPersonnel)
 	c.Next()
 }
 
 func updateAssignedOrder(c *gin.Context) {
-	// Parse assigned order ID from URL params
 	deliveryPersonnelIDStr := c.Param("delivery_personnel_id")
 	assignedOrderID := c.Param("assigned_order_id")
 
-	// Convert string delivery personnel ID to int64
 	deliveryPersonnelID, err := strconv.ParseInt(deliveryPersonnelIDStr, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid delivery personnel ID"})
 		return
 	}
 
-	// Parse status from request body
 	var requestBody struct {
 		Status string `json:"status" binding:"required"`
 	}
@@ -92,7 +83,6 @@ func updateAssignedOrder(c *gin.Context) {
 		return
 	}
 
-	// Fetch delivery personnel from context
 	deliveryPersonnel, _ := c.Get("delivery_personnel")
 
 	if deliveryPersonnelID != deliveryPersonnel.(*model.DeliveryPersonnel).Id {
@@ -100,7 +90,6 @@ func updateAssignedOrder(c *gin.Context) {
 		return
 	}
 
-	// Fetch assigned order from database
 	assignedOrder := &model.AssignedOrder{}
 	result := db.Where("id = ? AND delivery_personnel_id = ?", assignedOrderID, deliveryPersonnelID).First(assignedOrder)
 	if result.Error != nil {
@@ -108,7 +97,6 @@ func updateAssignedOrder(c *gin.Context) {
 		return
 	}
 
-	// Check if the status is already "DELIVERED"
 	if assignedOrder.Status == "DELIVERED" {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "The order has already been delivered"})
 		return
@@ -117,7 +105,6 @@ func updateAssignedOrder(c *gin.Context) {
 	assignedOrder.Status = requestBody.Status
 	db.Save(&assignedOrder)
 
-	// Update delivery personnel location based on status
 	if err := updateDeliveryPersonnelLocation(c, assignedOrder.OrderID, requestBody.Status); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -127,20 +114,17 @@ func updateAssignedOrder(c *gin.Context) {
 }
 
 func updateDeliveryPersonnelLocation(c *gin.Context, orderID int64, status string) error {
-	// Fetch delivery details from the database
 	var deliveryDetails model.DeliveryDetails
 	if err := db.Where("order_id = ?", orderID).First(&deliveryDetails).Error; err != nil {
 		return fmt.Errorf("failed to fetch delivery details: %v", err)
 	}
 
-	// Get the current delivery personnel
 	deliveryPersonnel, ok := c.Get("delivery_personnel")
 	if !ok {
 		return errors.New("delivery personnel not found in context")
 	}
 	currentDeliveryPersonnel := deliveryPersonnel.(*model.DeliveryPersonnel)
 
-	// Determine the location to update based on the status
 	var location *pb.Location
 	switch status {
 	case "IN_TRANSIT":
@@ -152,7 +136,6 @@ func updateDeliveryPersonnelLocation(c *gin.Context, orderID int64, status strin
 		return errors.New("invalid status")
 	}
 
-	// Update the delivery personnel's location
 	currentDeliveryPersonnel.Location = &model.Location{
 		Latitude:  location.Latitude,
 		Longitude: location.Longitude,
