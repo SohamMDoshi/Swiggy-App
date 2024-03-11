@@ -1,7 +1,6 @@
 package com.swiggy.order_service.controller;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swiggy.order_service.entity.Location;
 import com.swiggy.order_service.entity.User;
@@ -45,7 +44,7 @@ public class UserControllerTest {
 
         when(userService.add(anyString(),anyString(),any(Location.class))).thenReturn(response);
 
-        mockMvc.perform(post("/users").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post("/order-service/users").contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isCreated())
                 .andExpect(content().json(responseBody));

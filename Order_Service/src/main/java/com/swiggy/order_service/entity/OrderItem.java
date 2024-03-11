@@ -26,17 +26,3 @@ public class OrderItem {
     private Order order;
 }
 
-/*
-* Oder{
-*   [
-*       orderItem : {
-*           menuItemId :
-*           quantity :
-*       },
-*       orderItem : {
- *       menuItemId :
- *       quantity :
- *      }
-*   ]
-* }
-* */

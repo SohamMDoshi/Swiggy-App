@@ -3,13 +3,15 @@ package com.swiggy.catalog_service.controller;
 import com.swiggy.catalog_service.entity.Restaurant;
 import com.swiggy.catalog_service.requestModels.RestaurantRequest;
 import com.swiggy.catalog_service.service.RestaurantService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Validated
 @RestController
 @RequestMapping("/catalog-service/restaurants")
 public class RestaurantsController {
@@ -19,7 +21,7 @@ public class RestaurantsController {
 
 
     @PostMapping
-    public ResponseEntity<Restaurant> create(@RequestBody RestaurantRequest request) {
+    public ResponseEntity<Restaurant> create(@Valid @RequestBody RestaurantRequest request) {
         Restaurant restaurant = restaurantService.create(request);
         return new ResponseEntity<>(restaurant, HttpStatus.CREATED);
     }
@@ -37,7 +39,7 @@ public class RestaurantsController {
     }
 
     @PutMapping("/{restaurantId}")
-    public ResponseEntity<Restaurant> update(@PathVariable Long restaurantId, @RequestBody RestaurantRequest request) {
+    public ResponseEntity<Restaurant> update(@PathVariable Long restaurantId, @Valid@RequestBody RestaurantRequest request) {
         Restaurant restaurant = restaurantService.update(restaurantId,request);
         return new ResponseEntity<>(restaurant, HttpStatus.OK);
     }

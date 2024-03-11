@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/order-service/users")
 @Validated
 public class UserController {
 
@@ -26,7 +26,7 @@ public class UserController {
     private UserRepository userRepository;
 
     @PostMapping
-    public ResponseEntity<User> registerUser(@Valid @RequestBody UserRegistrationRequest request) {
+    public ResponseEntity<User> registerUser(@Valid@RequestBody UserRegistrationRequest request) {
         User user = userService.add(request.getUsername(), request.getPassword(),request.getLocation());
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }

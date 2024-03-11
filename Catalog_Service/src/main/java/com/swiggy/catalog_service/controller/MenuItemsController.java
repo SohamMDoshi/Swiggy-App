@@ -4,14 +4,16 @@ import com.swiggy.catalog_service.entity.MenuItem;
 import com.swiggy.catalog_service.requestModels.UpdateMenuItemRequest;
 import com.swiggy.catalog_service.response.MenuItemResponse;
 import com.swiggy.catalog_service.service.MenuItemService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-
+@Validated
 @RestController
 @RequestMapping("/catalog-service/restaurants/{restaurantId}/menu-items")
 public class MenuItemsController {
@@ -20,7 +22,7 @@ public class MenuItemsController {
     private MenuItemService menuItemService;
 
     @PostMapping
-    public ResponseEntity<MenuItem> create(@PathVariable Long restaurantId, @RequestBody MenuItem menuItem) {
+    public ResponseEntity<MenuItem> create(@PathVariable Long restaurantId, @Valid @RequestBody MenuItem menuItem) {
         MenuItem menuItem1 = menuItemService.addNew(restaurantId,menuItem);
         return new ResponseEntity<>(menuItem1, HttpStatus.CREATED);
     }
@@ -45,7 +47,7 @@ public class MenuItemsController {
     }
 
     @PutMapping("/{menuItemId}")
-    public ResponseEntity<MenuItem> update(@PathVariable Long menuItemId, @RequestBody UpdateMenuItemRequest request) {
+    public ResponseEntity<MenuItem> update(@PathVariable Long menuItemId, @Valid@RequestBody UpdateMenuItemRequest request) {
         MenuItem menuItem = menuItemService.updateDetails(menuItemId,request);
         return new ResponseEntity<>(menuItem, HttpStatus.OK);
     }

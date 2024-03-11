@@ -38,7 +38,6 @@ public class MenuItemResponse {
     public Double calculateTotalPrice() {
         double totalPrice = 0.0;
         for (MenuItem menuItem : menuItems) {
-            // Calculate total price for each MenuItem
             double price = menuItem.getPrice() * menuItem.getQuantity();
             totalPrice+=price;
         }

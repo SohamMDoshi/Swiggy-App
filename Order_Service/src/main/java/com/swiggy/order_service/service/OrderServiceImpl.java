@@ -35,9 +35,8 @@ public class OrderServiceImpl implements OrderService{
     public OrderResponse create(OrderRequest request, User user) {
         List<Long> menuItemIds = request.getOrderItems().stream()
                 .map(OrderItem::getMenuItemId).toList();
-        System.out.println(menuItemIds);
+
         MenuItemResponse response = menuItemsClient.getMenuList(request.getRestaurantId(),menuItemIds);
-        System.out.println(response);
         response.setQuantity(request);
         Double totalPrice = response.calculateTotalPrice();
 
@@ -53,11 +52,4 @@ public class OrderServiceImpl implements OrderService{
         return orderRepository.findById(id).orElseThrow(()-> new OrderNotFoundException(id));
     }
 
-    private static Double getTotalPrice(List<MenuItemResponse> menuItemsResponse) {
-        Double totalPrice = 0.0;
-        for(MenuItemResponse res : menuItemsResponse) {
-            totalPrice+= res.calculateTotalPrice();
-        }
-        return totalPrice;
-    }
 }
