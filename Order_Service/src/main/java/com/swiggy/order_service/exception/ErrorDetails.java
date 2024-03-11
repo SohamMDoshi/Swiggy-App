@@ -1,4 +1,4 @@
-package com.swiggy.wallet.Expection;
+package com.swiggy.order_service.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 public class ErrorDetails {
-
     private LocalDateTime dateTime;
     private String message;
     private String details;

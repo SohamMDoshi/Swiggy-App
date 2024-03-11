@@ -1,4 +1,4 @@
-package com.swiggy.wallet.Expection;
+package com.swiggy.order_service.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,29 +14,18 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class GlobalException {
 
-    @ExceptionHandler(InsufficientBalanceException.class)
-    public ResponseEntity<ErrorDetails> InsufficientBalanceExceptionHandler(InsufficientBalanceException exception, WebRequest request) {
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<ErrorDetails> OrderNotFoundExceptionHandler(OrderNotFoundException exception, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), exception.getMessage(), request.getDescription(false));
         return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(WalletNotFoundException.class)
-    public ResponseEntity<ErrorDetails> WalletNotFoundExceptionHandler(WalletNotFoundException exception, WebRequest request) {
+    @ExceptionHandler(OrderItemNotFoundException.class)
+    public ResponseEntity<ErrorDetails> OrderItemNotFoundExceptionHandler(OrderItemNotFoundException exception, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), exception.getMessage(), request.getDescription(false));
         return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(InvalidAmountException.class)
-    public ResponseEntity<ErrorDetails> InvalidAmountExceptionHandler(InvalidAmountException exception, WebRequest request) {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), exception.getMessage(), request.getDescription(false));
-        return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(OperationNotPossible.class)
-    public ResponseEntity<ErrorDetails> OperationNotPossibleHandler(OperationNotPossible exception, WebRequest request) {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), exception.getMessage(), request.getDescription(false));
-        return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.BAD_REQUEST);
-    }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorDetails> UserNotFoundExceptionHandler(UserNotFoundException exception, WebRequest request) {
@@ -50,17 +39,6 @@ public class GlobalException {
         return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(IncorrectWalletException.class)
-    public ResponseEntity<ErrorDetails> IncorrectWalletExceptionHandler(IncorrectWalletException exception, WebRequest request) {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), exception.getMessage(), request.getDescription(false));
-        return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(IncorrectUserException.class)
-    public ResponseEntity<ErrorDetails> IncorrectUserExceptionHandler(IncorrectUserException exception, WebRequest request) {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), exception.getMessage(), request.getDescription(false));
-        return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.BAD_REQUEST);
-    }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorDetails> BadCredentialsExceptionHandler(BadCredentialsException exception, WebRequest request) {
@@ -74,11 +52,6 @@ public class GlobalException {
         return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(SelfTransferException.class)
-    public ResponseEntity<ErrorDetails> SelfTransferExceptionHandler(SelfTransferException exception, WebRequest request) {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), exception.getMessage(), request.getDescription(false));
-        return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.BAD_REQUEST);
-    }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorDetails> HttpMessageNotReadableExceptionHandler(HttpMessageNotReadableException exception, WebRequest request) {
@@ -86,10 +59,5 @@ public class GlobalException {
         return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(CurrencyMismatchException.class)
-    public ResponseEntity<ErrorDetails> CurrencyMismatchExceptionHandler(CurrencyMismatchException exception, WebRequest request) {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), exception.getMessage(), request.getDescription(false));
-        return new ResponseEntity<ErrorDetails>(errorDetails, HttpStatus.BAD_REQUEST);
-    }
 
 }

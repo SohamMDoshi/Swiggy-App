@@ -27,8 +27,8 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> registerUser(@Valid @RequestBody UserRegistrationRequest request) {
-        User users = userService.add(request.getUsername(), request.getPassword(),request.getLocation());
-        return new ResponseEntity<>(users, HttpStatus.CREATED);
+        User user = userService.add(request.getUsername(), request.getPassword(),request.getLocation());
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
 }
